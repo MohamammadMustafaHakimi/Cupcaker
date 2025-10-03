@@ -25,6 +25,8 @@ import com.example.cupcake.R
 /**
  * Composable that displays formatted [price] that will be formatted and displayed on screen
  */
+
+// this composable is shared among different screens of the app
 @Composable
 fun FormattedPriceLabel(subtotal: String, modifier: Modifier = Modifier) {
     Text(

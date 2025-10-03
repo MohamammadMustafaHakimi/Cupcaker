@@ -106,11 +106,11 @@ class OrderViewModel : ViewModel() {
      */
     private fun pickupOptions(): List<String> {
         val dateOptions = mutableListOf<String>()
-        val formatter = SimpleDateFormat("E MMM d", Locale.getDefault())
-        val calendar = Calendar.getInstance()
+        val formatter = SimpleDateFormat("E MMM d", Locale.getDefault()) // builds a formatter that outputs dates in the pattern; E means day of the week, MMM, short month name; d is day of month; it uses the device's default locale for language settings
+        val calendar = Calendar.getInstance() // gets a Calender object set to the current date/time
         // add current date and the following 3 dates.
         repeat(4) {
-            dateOptions.add(formatter.format(calendar.time))
+            dateOptions.add(formatter.format(calendar.time)) // formats the calender date into something like "Mon Jan 5" storing it in the list
             calendar.add(Calendar.DATE, 1)
         }
         return dateOptions

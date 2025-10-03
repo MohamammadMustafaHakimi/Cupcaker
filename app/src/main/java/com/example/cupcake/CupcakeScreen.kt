@@ -15,6 +15,8 @@
  */
 package com.example.cupcake
 
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
@@ -33,6 +35,46 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.cupcake.ui.OrderViewModel
+import androidx.navigation.compose.NavHost
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.dimensionResource
+import androidx.navigation.compose.composable
+import com.example.cupcake.data.DataSource
+import com.example.cupcake.ui.OrderSummaryScreen
+import com.example.cupcake.ui.SelectOptionScreen
+import com.example.cupcake.ui.StartOrderScreen
+
+
+/**
+ * The Navigation consists of three main parts:
+ * 1. NavController: Responsible for navigating between destinations, or screens in the app
+ * 2. NavGraph: Maps composable destinations to navigate to
+ * 3. NavHost: acts as a container for displaying the current destination of the NavGraph
+ */
+
+/**
+ *
+ * NavHost(
+ *      navController, // an instance of the NavHostController used to navigate between screens; e.g calling the navigate() method
+ *      startDestination, // default route, in this case the Start route
+ *      modifier,
+ * ) {
+ *    ======================
+ *    |      content       |
+ *    =====================
+ * }
+ */
+
+
+
+// we use this for defining the four routes of the app
+enum class CupcakeScreen() {
+    Start,  // should be mapped to StartOrderScreen
+    Flavor, // should be mapped to cupcake flavour
+    Pickup, // should be mapped to pickup screen
+    Summary // should be mapped to SummaryScreen.kt
+}
 
 /**
  * Composable that displays the topBar and displays back button if back navigation is possible.
@@ -77,6 +119,50 @@ fun CupcakeApp(
         }
     ) { innerPadding ->
         val uiState by viewModel.uiState.collectAsState()
+
+        // the first part of the navigation: NavHost
+
+        NavHost(
+            navController = navController,
+            startDestination = CupcakeScreen.Start.name,
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            composable(route = CupcakeScreen.Start.name) { // The composable() function is an extension function of NavGraphBuilder; purpose?
+                StartOrderScreen(
+                    quantityOptions = DataSource.quantityOptions, // what is the purpose of the DataSource composable? -> it comes from the DataSource.kt from the datasource object
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(dimensionResource(R.dimen.padding_medium))
+                )
+            }
+
+            composable(route = CupcakeScreen.Flavor.name) {
+                val context = LocalContext.current // purpose???
+                SelectOptionScreen(
+                    subtotal = uiState.price,
+                    options = DataSource.flavors.map { id -> context.resources.getString(id)},
+                    onSelectionChanged = { viewModel.setFlavor(it) },
+                    modifier = Modifier.fillMaxHeight()
+                )
+            }
+
+            composable(route = CupcakeScreen.Pickup.name) {
+                SelectOptionScreen(
+                    subtotal = uiState.price,
+                    options = uiState.pickupOptions,
+                    onSelectionChanged = { viewModel.setDate(it) },
+                    modifier = Modifier.fillMaxHeight()
+
+                )
+            }
+
+            composable(route = CupcakeScreen.Summary.name) {
+                OrderSummaryScreen(
+                    orderUiState = uiState,
+                    modifier = Modifier.fillMaxHeight()
+                )
+            }
+        }
 
     }
 }

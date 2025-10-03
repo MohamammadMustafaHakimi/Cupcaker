@@ -50,7 +50,7 @@ import com.example.cupcake.ui.theme.CupcakeTheme
 @Composable
 fun SelectOptionScreen(
     subtotal: String,
-    options: List<String>,
+    options: List<String> // respresents the options to display
     onSelectionChanged: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -112,7 +112,7 @@ fun SelectOptionScreen(
             Button(
                 modifier = Modifier.weight(1f),
                 // the button is enabled when the user makes a selection
-                enabled = selectedValue.isNotEmpty(),
+                enabled = selectedValue.isNotEmpty(), // what does this do?
                 onClick = {}
             ) {
                 Text(stringResource(R.string.next))
