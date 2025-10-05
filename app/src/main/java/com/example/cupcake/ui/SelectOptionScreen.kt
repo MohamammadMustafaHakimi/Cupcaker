@@ -50,8 +50,10 @@ import com.example.cupcake.ui.theme.CupcakeTheme
 @Composable
 fun SelectOptionScreen(
     subtotal: String,
-    options: List<String> // respresents the options to display
+    options: List<String>, // respresents the options to display
     onSelectionChanged: (String) -> Unit = {},
+    onCancelButtonClicked: () -> Unit = {},
+    onNextButtonClicked: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var selectedValue by rememberSaveable { mutableStateOf("") }
@@ -105,7 +107,8 @@ fun SelectOptionScreen(
         ) {
             OutlinedButton(
                 modifier = Modifier.weight(1f),
-                onClick = {}
+//                onClick = { }
+                onClick = onCancelButtonClicked
             ) {
                 Text(stringResource(R.string.cancel))
             }
@@ -113,7 +116,8 @@ fun SelectOptionScreen(
                 modifier = Modifier.weight(1f),
                 // the button is enabled when the user makes a selection
                 enabled = selectedValue.isNotEmpty(), // what does this do?
-                onClick = {}
+//                onClick = {}
+                onClick = onNextButtonClicked
             ) {
                 Text(stringResource(R.string.next))
             }
