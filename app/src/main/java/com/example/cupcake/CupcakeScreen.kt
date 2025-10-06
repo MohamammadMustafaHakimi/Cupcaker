@@ -17,6 +17,7 @@ package com.example.cupcake
 
 import android.content.Context
 import android.content.Intent
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
@@ -43,6 +44,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.navigation.NavController
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.cupcake.data.DataSource
 import com.example.cupcake.ui.OrderSummaryScreen
 import com.example.cupcake.ui.SelectOptionScreen
@@ -80,11 +82,11 @@ import com.example.cupcake.ui.StartOrderScreen
 
 
 // we use this for defining the four routes of the app
-enum class CupcakeScreen() {
-    Start,  // should be mapped to StartOrderScreen
-    Flavor, // should be mapped to cupcake flavour
-    Pickup, // should be mapped to pickup screen
-    Summary // should be mapped to SummaryScreen.kt
+enum class CupcakeScreen(@StringRes val title: Int) {
+    Start(title = R.string.app_name),  // should be mapped to StartOrderScreen
+    Flavor(title = R.string.flavor), // should be mapped to cupcake flavour
+    Pickup(title = R.string.choose_pickup_date), // should be mapped to pickup screen
+    Summary(title = R.string.order_cupcakes) // should be mapped to SummaryScreen.kt
 }
 
 /**
@@ -92,12 +94,14 @@ enum class CupcakeScreen() {
  */
 @Composable
 fun CupcakeAppBar(
+    currentScreen: CupcakeScreen, // why?
     canNavigateBack: Boolean,
     navigateUp: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
-        title = { Text(stringResource(id = R.string.app_name)) },
+//        title = { Text(stringResource(id = R.string.app_name)) },
+        title = { Text(stringResource(currentScreen.title)) },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
         ),
@@ -121,15 +125,24 @@ fun CupcakeApp(
     navController: NavHostController = rememberNavController()
 ) {
 
+    val backStackEntry by navController.currentBackStackEntryAsState()
+    val currentScreen = CupcakeScreen.valueOf(
+        backStackEntry?.destination?.route ?: CupcakeScreen.Start.name
+    )
+
     Scaffold(
         topBar = {
             CupcakeAppBar(
-                canNavigateBack = false,
-                navigateUp = { /* TODO: implement back navigation */ }
+                currentScreen = currentScreen,
+//                canNavigateBack = false,
+                canNavigateBack = navController.previousBackStackEntry != null,
+//                navigateUp = { /* TODO: implement back navigation */ }
+                navigateUp = { navController.navigateUp() }
             )
         }
     ) { innerPadding ->
         val uiState by viewModel.uiState.collectAsState()
+
 
         // the first part of the navigation: NavHost
 
